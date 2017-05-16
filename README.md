@@ -35,6 +35,16 @@ eg:
 
 The above playbook will open TCP 80 and 443 ports and enable iptables.
 
+Quckly confiugre iptables on some host
+--------------------------------------
+
+All role tasks that modify iptables are tagged with `iptables` tag.
+To quickly configure iptables on some host, just run that tag on a host, for example:
+
+``` bash
+ansible-playbook web_servers.yml -l web-001 -t iptables
+```
+
 
 Default values
 --------------
