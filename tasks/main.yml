@@ -1,0 +1,59 @@
+---
+- name: Stop and disable firewalld  | RedHat
+  service:
+    name: firewalld
+    state: stopped
+    enabled: False
+  ignore_errors: True
+  when: ansible_os_family == "RedHat"
+  tags: iptables
+
+- name: Install iptables | RedHat
+  package:
+    name: iptables-services
+    state: present
+  when: ansible_os_family == "RedHat"
+  tags: iptables
+ 
+- name: Install iptables | Debian
+  package:
+    name: iptables
+    state: present
+  when: ansible_os_family == "Debian"
+  tags: iptables
+  
+- name: Set custom iptables rules
+  iptables_raw:
+    name: 'iptables_custom_rules_{{ item.name }}'
+    rules: '{{ item.rules }}'
+    state: '{{ item.state }}'
+    weight: '{{ item.weight|default(omit) }}'
+    table: '{{ item.table|default(omit) }}'
+  with_items: '{{ iptables_custom_rules }}'
+  tags: iptables
+
+- name: Set default iptables head rules
+  iptables_raw:
+    name: iptables_default_head
+    weight: 10
+    keep_unmanaged: '{{ iptables_keep_unmanaged }}'
+    state: present
+    rules: '{{ iptables_default_head }}'
+  tags: iptables
+
+- name: Set default iptables tail rules
+  iptables_raw:
+    name: iptables_default_tail
+    weight: 99
+    keep_unmanaged: '{{ iptables_keep_unmanaged }}'
+    state: '{{ (iptables_default_tail != "" ) | ternary("present", "absent") }}'
+    rules: '{{ iptables_default_tail }}'
+  tags: iptables
+  
+- name: Enable and start iptables service
+  service:
+    name: iptables
+    state: started
+    enabled: True
+  tags: iptables
+
