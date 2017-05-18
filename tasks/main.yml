@@ -17,7 +17,7 @@
  
 - name: Install iptables | Debian
   package:
-    name: iptables
+    name: iptables-persistent
     state: present
   when: ansible_os_family == "Debian"
   tags: iptables
@@ -55,5 +55,15 @@
     name: iptables
     state: started
     enabled: True
+  when: ansible_os_family == "RedHat"
+  tags: iptables
+
+- name: Enable and start iptables service
+  service:
+    name: iptables-persistent
+    state: started
+    enabled: True
+  changed_when: False     # The service 'iptables-persistent' doesn't have 'status' state. So, it always reports changed state to Ansible.
+  when: ansible_os_family == "Debian"
   tags: iptables
 
