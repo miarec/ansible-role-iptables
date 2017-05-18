@@ -5,14 +5,14 @@
     state: stopped
     enabled: False
   ignore_errors: True
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
   tags: iptables
 
 - name: Install iptables | RedHat
   package:
     name: iptables-services
     state: present
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
   tags: iptables
  
 - name: Install iptables | Debian
