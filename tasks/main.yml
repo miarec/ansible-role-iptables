@@ -50,7 +50,7 @@
     rules: '{{ iptables_default_tail }}'
   tags: iptables
   
-- name: Enable and start iptables service
+- name: Enable and start iptables service | RedHat
   service:
     name: iptables
     state: started
@@ -58,12 +58,20 @@
   when: ansible_os_family == "RedHat"
   tags: iptables
 
-- name: Enable and start iptables service
+- name: Enable and start iptables service | Ubuntu before 16.04
   service:
     name: iptables-persistent
     state: started
     enabled: True
   changed_when: False     # The service 'iptables-persistent' doesn't have 'status' state. So, it always reports changed state to Ansible.
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and ansible_lsb.major_release|int < 16
   tags: iptables
 
+- name: Enable and start iptables service | Ubuntu 16.04
+  service:
+    name: netfilter-persistent
+    state: started
+    enabled: True
+  changed_when: False     # The service 'iptables-persistent' doesn't have 'status' state. So, it always reports changed state to Ansible.
+  when: ansible_os_family == "Debian" and ansible_lsb.major_release|int >= 16
+  tags: iptables
