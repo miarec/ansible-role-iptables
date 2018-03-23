@@ -6,6 +6,7 @@
     enabled: False
   ignore_errors: True
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  become: yes
   tags: iptables
 
 - name: Install iptables | RedHat
@@ -13,6 +14,7 @@
     name: iptables-services
     state: present
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+  become: yes
   tags: iptables
  
 - name: Install iptables | Debian
@@ -20,6 +22,7 @@
     name: iptables-persistent
     state: present
   when: ansible_os_family == "Debian"
+  become: yes
   tags: iptables
   
 - name: Set custom iptables rules
@@ -30,6 +33,7 @@
     weight: '{{ item.weight|default(omit) }}'
     table: '{{ item.table|default(omit) }}'
   with_items: '{{ iptables_custom_rules }}'
+  become: yes
   tags: iptables
 
 - name: Set default iptables head rules
@@ -39,6 +43,7 @@
     keep_unmanaged: '{{ iptables_keep_unmanaged }}'
     state: present
     rules: '{{ iptables_default_head }}'
+  become: yes
   tags: iptables
 
 - name: Set default iptables tail rules
@@ -48,6 +53,7 @@
     keep_unmanaged: '{{ iptables_keep_unmanaged }}'
     state: '{{ (iptables_default_tail != "" ) | ternary("present", "absent") }}'
     rules: '{{ iptables_default_tail }}'
+  become: yes
   tags: iptables
   
 - name: Enable and start iptables service | RedHat
@@ -56,6 +62,7 @@
     state: started
     enabled: True
   when: ansible_os_family == "RedHat"
+  become: yes
   tags: iptables
 
 - name: Enable and start iptables service | Ubuntu before 16.04
@@ -65,6 +72,7 @@
     enabled: True
   changed_when: False     # The service 'iptables-persistent' doesn't have 'status' state. So, it always reports changed state to Ansible.
   when: ansible_os_family == "Debian" and ansible_lsb.major_release|int < 16
+  become: yes
   tags: iptables
 
 - name: Enable and start iptables service | Ubuntu 16.04
@@ -74,4 +82,5 @@
     enabled: True
   changed_when: False     # The service 'iptables-persistent' doesn't have 'status' state. So, it always reports changed state to Ansible.
   when: ansible_os_family == "Debian" and ansible_lsb.major_release|int >= 16
+  become: yes
   tags: iptables
