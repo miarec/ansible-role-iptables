@@ -1,0 +1,31 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    # certbot_domain: ansible-role-letsencrypt.example.com
+    # certbot_email: ssl-molecule@example.com
+    # certbot_method: none
+    # certbot_configure_apache: false
+
+  pre_tasks:
+    # - name: Install prerequisites
+    #   block:
+    #     - name: Update apt cache
+    #       apt:
+    #         update_cache: true
+    #         cache_valid_time: 600
+    #       changed_when: false
+    #       when: ansible_os_family == "Debian"
+
+    # - debug: var=ansible_distribution
+    # - debug: var=ansible_distribution_major_version
+
+    # - set_fact:
+    #     ansible_python_interpreter: python3
+    #   when: ansible_distribution == "CentOS"
+
+  roles:
+    - role: ansible-role-iptables
+      tags:
+        - iptables
